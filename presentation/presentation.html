@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Category Theory as a Tool for Thought</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+<body>
+<textarea id="source">
+
+class: center, middle, transition, intro
+
+# Category Theory as a <br /> Tool for Thought
+
+.horizontalCentered.caption[Daniel Beskin]
+
+???
+- We are going to talk about category theory, and how it can be used as a tool to help us think about functional programming
+- Before we begin, though, I would like to start with a small introduction, to get us into the right frame of mind
+
+---
+## Prelude
+
+???
+- If you happen to follow the Haskell world, you quite likely have heard of Edward Kmett
+- I will use him as an example of someone who is very proficient in category theory, and the sort of person that inspired this talk
+--
+
+.verticalCentered[
+> — [someone describing a cool new idea]  
+> — ... this is just the **right Kan extension** encoding of  
+&nbsp;&nbsp;&nbsp;&nbsp;[some other well-known idea]...  
+.footnote[Edward Kmett on [Reddit](https://www.reddit.com/r/haskell/comments/1j9n5y/c/cbcwbsa/), edited]
+]
+
+???
+- This is a somewhat edited quote of a conversation on the Haskell Reddit
+- Someone describes a cool new idea that can be useful for functional programming
+- And Edward points out that this is just the "right Kan extension" of some other well-known thing
+- When seeing something like this, although I've no idea what a Kan extension is
+- The first thing that comes to my mind is
+- Is there a left Kan extension? Will it produce another equally useful and impressive thing?
+- **But delving deeper, this reveals something very profound**
+- **What we see here is an example of applying a technique from category theory to derive one idea from another**
+- **This is an example of how category theory can be used as a tool to explore what I'll call "the idea space"**
+---
+
+layout: true
+
+## Exploring the Idea Space
+---
+???
+- So what do I mean by "the idea space"
+- There are lots of useful ideas in the world
+- And every once in a while someone discovers a significant new idea
+--
+.ideaSpace[![](idea-space-1.svg)]
+
+???
+- If we are lucky this idea might lead us to discover some other related ideas, not as a major, but still nice to have
+
+--
+.ideaSpace[![](idea-space-2.svg)]
+
+???
+- Somewhere else, someone might discover another idea
+--
+.ideaSpace[![](idea-space-3.svg)]
+
+???
+- With its own follow up ideas
+--
+.ideaSpace[![](idea-space-4.svg)]
+  
+???
+- Rinse and repeat...
+
+--
+.ideaSpace[![](idea-space-5.svg)]
+
+???
+
+- All of these ideas form the idea space
+- The problem with the picture that I'm showing here is that each idea requires some special insight, a eureka moment, or a stroke of genius to be discovered
+- And once discovered, it typically won't help you discover other significant ideas
+- How can you connect all these differently shaped ideas?
+- How can you find a connection between this circle-shaped idea and this square-shaped idea?
+- **That is, we are lacking the tools to explore the idea space**
+- **In this talk, I'll try to show how category theory can provide us with various tools to help us with this exploration**
+
+--
+.ideaSpace[![](idea-space-6.svg)]
+
+???
+- Using techniques from category theory, we'll be able to connect these different shapes in space
+- And sometimes, they might even help us discover brand new ideas 
+
+--
+.ideaSpace[![](idea-space-7.svg)]
+
+???
+- **Category theory will help us explore the idea space in a way that is much more systematic and mechanical then just sitting around waiting for a stroke of genius to hit you on the head**
+- So here's what I'm going to talk about
+
+---
+layout: false
+
+## Outline
+
+- Intro
+- Categorically speaking
+- When in doubt, build a category
+- The categorical nomad
+- "Case study"
+
+???
+- We'll start with a very, very quick introduction to category theory, just the bare basics that we'll need for the talk
+- Then we'll see how to translate ideas from programming into the language of category theory, and what benefits we can gain from this translation
+- Next, we'll build on this and see how recognizing the structure of categories around us can lead to new insights
+- The last class of techniques we'll learn about is how to generalize ideas in a way that makes them "portable" between categories. A very powerful way to discover new structures.
+- And we'll wrap up with a "case study", a small application of these techniques to semi-real code
+- **Hopefully, by the end of this talk you'll be inspired to approach category theory on your own and use it as a tool for thought**
+- Let's dive in
+---
+
+class: middle, transition
+
+> Category theory takes a bird’s eye view of mathematics. From high in the sky,
+details become invisible, but we can spot patterns that were impossible to detect from ground level.
+
+.footnote[Tom Leinster, Basic Category Theory]
+
+???
+
+- We'll begin with the very basics of category theory
+- **For the mathematically inclined amongst you, be advised, that I'll be very loose with various definitions in this talk** 
+- Especially with the absence of most laws
+- Please don't judge me for it
+---
+
+layout: true
+
+## Category Theory 101
+
+---
+
+???
+- So a category consists of a number of things
+--
+
+.catTheory101[![](cat-theory-101-1.svg)]
+
+???
+- A bunch of objects
+
+--
+
+.catTheory101[![](cat-theory-101-2.svg)]
+
+???
+- And a set of arrows between them that we call morphisms
+- These must behave nicely, that is, they should compose
+
+---
+
+.catTheory101[![](cat-theory-101-3.svg)]
+
+???
+
+- So for every pair of morphisms that form a path like so
+
+--
+
+.catTheory101[![](cat-theory-101-4.svg)]
+???
+
+- We should also have a composite morphism that goes from `A` to `C` that does the same thing
+
+---
+
+layout: false
+
+## The Category of Types
+
+???
+- Now, this is fairly abstract, since the objects and morphisms can be pretty much anything
+- But since this is a programming conference
+- The category that we'll start with is the category that is formed by the types in our type-system
+- Namely
+--
+
+- Objects: types
+  - `Integer`
+  - `String`
+  - `Boolean`
+
+???
+- The objects of the category are the different types that we have
+- Each concrete type in the language, such as integers, strings and booleans, will correspond to a single object
+--
+
+- Morphisms: functions
+  - `show :: Integer -> String`
+  - `lessThan5 :: Integer -> Boolean`
+
+???
+- Morphisms are functions
+- So a function from an integer to a string, corresponds to a morphism between the object `Integer` and the object `String`
+- Function composition gives us the composition behavior that morphisms must obey
+
+---
+
+## What It's All About
+
+???
+- So from the definitions that we have so far, what is category theory about?
+- For the purposes of this talk, we see that it's
+
+--
+- Composition
+
+???
+- About composition
+- Since this is pretty much the only structure that a category has
+- **As programmers, this should be of great interest, since things that compose are the things that are the nicest to program with**
+- Especially when doing functional programming
+- But more importantly for this talk
+- Category theory is about
+
+--
+
+- Relationships
+
+???
+- Relationships, that is, how things relate to each other
+- Notice how in the definition of a category we don't care about the specifics of objects
+- We don't care that integers are made of bits or strings are made of characters
+- All we care about is that these concepts exist, and what morphisms they have coming and going
+- That is, how they relate to each other and other concepts
+- **Thinking about how things relate to each other is exactly the sort of thing that we need to be able to explore the idea space**
+- So let's begin
+
+---
+layout: false
+
+class: middle, transition
+
+> The language of categories is affectionately known as "abstract nonsense".
+
+.footnote[Paolo Aluffi, Algebra: Chapter 0]
+
+???
+- Now that we know what a category is
+- We can try to convert concepts from programming into the language of category theory
+- That is, talk about them only in terms of objects and morphisms
+- Once we manage to do that, we'll see how useful this point of view is
+---
+layout: true
+
+## What's in a Tuple
+
+---
+???
+- We'll start with tuples
+- A pair of two types
+
+--
+
+.product[![](product-1.svg)]
+
+???
+- This is how mathematicians designate a tuple of `A` and `B`
+- We say that it's a "product of `A` and `B`"
+- Since category theory is about relationships, the first question to ask is
+- How does a tuple of two types relate to anything else?
+--
+
+.product[![](product-2.svg)]
+
+???
+- Well, since a product of `A` and `B` is made out of `A` and `B`
+- We must have a way to extract an `A` and a `B` from it
+- So we have two morphisms that do exactly that, we say that we project `A` and `B` from the product
+- Now, there are lots of things that can be decomposed into `A` and `B`
+
+--
+
+.product[![](product-3.svg)]
+
+???
+
+- Suppose `C` is one such thing
+- How can we differentiate this tuple candidate from our product type?
+- **In a sense, we want to find the object that is the "best fit" for being a tuple**
+- Meaning that it's not "too big" or "too small" and contains exactly `A` and `B` and nothing else
+- One way to do it, is to define what is called a "universal construction"
+
+---
+
+.product[![](product-4.svg)]
+
+???
+
+- The dashed arrow here is called a "universal morphism"
+- Meaning that there's exactly one such morphism going from `C` to the product of `A` and `B`
+- This resulting diagram is an example of a "commutative diagram"
+- It means that for every way of getting from one point to another, we get the exact same result
+- In this case we read it as follows
+- For every tuple candidate `C`
+- Projecting from `C` to either `A` or `B` is the same as first going from `C` to the product of `A` and `B` and then projecting to `A` and `B`
+- And since `u` is universal there will be exactly one way to do that
+- **This precisely captures the notion of being a tuple, not too big and not too small**
+- If the product of `A` and `B` was too big, there would be more than one morphism like that pointing into it
+- If it was too small, there wouldn't have been any morphisms with that property
+- So this is the categorical way of defining a tuple
+- **We are only describing how it relates to other things and we say nothing about its implementation details**
+- This may seem as a rather roundabout way of doing things, but we immediately gain something
+- Relationships can be reversed
+- Quite literally, we can take this diagram and reverse all the arrows
+
+---
+
+.sum[![](sum.svg)]
+
+???
+- By doing this completely mechanical act, we've just discovered something new
+- This is yet another commutative diagram for another universal construction
+- Meaning that we have another concept on our hands
+- But what is it?
+- Well, it says that we can put an `A` into it, or a `B`, and it's "the best" such thing
+- So it's either `A` or `B`, that is the `Either` type from functional programming
+- Or, in mathematical speak, the "sum type"
+- **This is quite amazing, with almost zero effort, we derived a new concept from another one**
+- And what we did here is part of the general principle called "duality"
+
+---
+layout: false
+
+## Duality
+
+- Discover one idea, get another for free
+- Completely mechanical
+- Dual concepts are not always obviously related
+
+???
+- Duality gives us ideas for free
+- Once we formulate some concept categorically, that is, by its relationships to other things
+- We can invoke duality, just reverse all the arrows, and get another concept for free
+- This is completely mechanical
+- And sometimes, dual concepts can be very different from one another, and not obviously related
+- **We get all this for free just by taking the categorical perspective**
+- **From now on, pretty much for every new concept that I'll introduce, you can actually take away two concepts from it**
+- **So this is our first tool to help us explore the idea space**
+- But let's talk more deeply about these universal constructions we just saw
+
+---
+## Universal Constructions
+
+???
+- If you go down the path of defining concepts categorically, which you definitely should do
+- Universal constructions crop up quite often
+- We just saw the product construction
+
+--
+
+.universal.rawProduct[![](raw-product.svg)]
+
+???
+- But there are more
+--
+
+.universal.rawTerminal-object[![](raw-terminal-object.svg)]
+
+.universal.rawEqualizer[![](raw-equalizer.svg)]
+
+.universal.rawPullback[![](raw-pullback.svg)]
+
+???
+- All of these are useful concepts
+- But if you look closely, there's something very repetitive here
+- There's always some "best" object hanging above some pattern of other objects
+- And there's always some other candidate for the same thing connected with a universal arrow
+- **As a programmer, I find this repetition to be a bit annoying, like code that is not DRY or something like that**
+- Luckily, it seems that mathematicians are very good at uncovering patterns and distilling their essence
+
+---
+layout: true
+
+## Diagrams and Limits
+---
+
+???
+- So what do we have here?
+---
+
+.diagrams[![](diagrams-1.svg)]
+
+???
+- We start out with some category
+- And we want to single out some pattern in it
+- So we'll use another category just for the pattern
+--
+
+.diagrams[![](diagrams-2.svg)]
+
+???
+- We call it the indexing category
+- Here we are trying to describe the product pattern
+- So we just have two objects in our indexing category
+- To actually point out the pattern in our category of interest, we'll need to map from the indexing category into our category
+
+--
+.diagrams[![](diagrams-3.svg)]
+
+???
+- So each object in our indexing category is assigned to some object in our target category, singling out the desired pattern
+- In this case, a pair of objects
+- Formally speaking, we are building a functor from one category to the other, but I won't be going into that
+- We call this construction a diagram of the indexing category
+- This covers the pattern of objects in a universal construction
+- So let's zoom in on this pattern
+
+--
+.diagrams[![](diagrams-4.svg)]
+
+???
+- Now let's tackle our "best" object
+- The best object must have morphisms pointing into our diagram
+
+--
+.diagrams[![](diagrams-5.svg)]
+
+???
+- We call this a "cone over the diagram", since, well, it looks like a cone
+- And there need to be some other candidate cones for that same role
+
+--
+.diagrams[![](diagrams-6.svg)]
+
+???
+- But since our cone is the best fit for being a cone, there's a universal arrow pointing from the candidates to our cone
+
+--
+.diagrams[![](diagrams-7.svg)]
+
+???
+- We call this cone the "limit of the diagram"
+- Now, the limit captures all the parts of the universal construction pattern
+- We have the shape and the best object over the shape
+- In this case this limit describes the product contruction
+---
+
+.diagrams[![](diagrams-8.svg)]
+
+???
+- This may seem like we just replaced one universal construction with another
+- But actually, by distilling this pattern into diagrams and limits, we gained something new
+- We can now just draw some simple pattern
+
+---
+
+.titledDiagram.productDiagram[
+.diagramTitle[
+Product
+]
+.diagram[
+![](product-diagram.svg)
+]
+]
+
+???
+- And each such pattern corresponds to that whole universal construction that I've shown before
+- **So now it's "draw a picture get a concept"**
+- **Actually, by duality, each diagram corresponds to two new concepts**
+- **Since for every limit there's also the dual co-limit**
+- **We've managed to minimize each concept to its essence**
+- I find this very compact representation quite pleasing
+- And we can draw more diagrams
+- **Each new diagram representing yet another step in the idea space**
+--
+
+.titledDiagram.equalizerDiagram[
+.diagramTitle[
+Equalizer
+]
+.diagram[
+![](equalizer-diagram.svg)
+]
+]
+
+.titledDiagram.pullbackDiagram[
+.diagramTitle[
+Pullback
+]
+.diagram[
+![](pullback-diagram.svg)
+]
+]
+
+???
+
+- And discover new concepts
+- Although I won't be going into each of these diagrams, feel free to try and figure out what feature from the world of type systems corresponds to each such diagram
+- We'll just take a look at this last diagram
+--
+
+.titledDiagram.terminalObjectDiagram[
+.diagramTitle[
+Terminal Object
+]
+.diagram[
+![](terminal-object-diagram.svg)
+]
+]
+
+???
+- The empty diagram, with no objects
+- It may seem trivial, but it's actually quite interesting
+
+---
+layout: true
+
+## Initial and Terminal Objects
+---
+
+???
+- We start by drawing a cone over our empty diagram
+--
+
+.terminalObject[![](terminal-1.svg)]
+
+???
+- That's just a single object, with no arrows
+- We now say that for every other cone over the empty diagram
+
+--
+.terminalObject[![](terminal-2.svg)]
+
+???
+- That's just any other object in the category, since they are all cones over the empty diagram
+- We have a unique morphism pointing into our limit
+--
+.terminalObject[![](terminal-3.svg)]
+
+???
+- We call this object the terminal object of the category
+--
+.terminalObject[![](terminal-4.svg)]
+
+???
+- And mark it with a `1`
+- And of course there's the dual, the initial object
+---
+
+.terminalAndInitial[![](terminal-and-initial.svg)]
+
+???
+- So every object can be mapped uniquely into the terminal object
+- And every object in the category can be reached uniquely from the initial object
+- More concretely, in the category of types
+
+--
+.terminalAndInitialCode[
+- Terminal: `()`
+- Initial: `Void`
+]
+
+???
+- The terminal object is `Unit`, a type with a single inhabitant
+- The initial object is `Void`, a type with no inhabitants
+- The initial and terminal objects can in some sense be thought of as the endpoints of the category
+- And so, they are good starting points for exploring new categories
+- As we'll do next
+---
+
+layout: false
+
+class: middle, transition
+
+> Here’s a categorical rule of thumb: every time you have composition, you should look for a category.
+
+.footnote[Bartosz Milewski's Programming Cafe]
+
+???
+- So far we've been looking within a single category, the category of types
+- What I want to show next, is how we can find the structure of a category in other places
+- And what insights we can gain from exploring these new categories
+- We start with monoids
+---
+
+## Monoids
+
+```
+class Monoid a where
+  combine :: (a, a) -> a
+  empty :: () -> a
+```
+
+???
+- Monoids are very common in programming
+- They are the essence of combining values
+- So a monoid over some type `a` lets us combine two values of `a` into one
+- And also provides us with an empty value that just disappears during combination
+- You might notice, that this is not the standard way of describing monoids
+- But this way is more convenient for our purposes, since it will be easier to turn into a objects and morphisms
+- As we'll do now
+--
+
+.monoid[![](monoid-1.svg)]
+
+???
+- So a monoid over some object `A`
+--
+
+.monoid[![](monoid-2.svg)]
+
+???
+- Has an arrow from a product of `A`s back to `A`
+- This corresponds to `combine`
+
+--
+
+.monoid[![](monoid-3.svg)]
+
+???
+- And has an arrow from `Unit` back to `A`
+- This corresponds to `empty`
+- This is a bit of cheating
+- Since in category theory we don't have a way of talking about specific elements of `A`
+- Instead we talk about functions from `Unit` to `A`, which just correspond to constants, which are exactly the elements of `A`
+- But now we have a diagram describing the concept of a monoid
+- We can invoke the usual trick of duality and discover the dual of a monoid, a "co-monoid"
+- Feel free to try to figure out later whether it's a useful thing or not
+- Anyways, we are on a quest to build a new category
+- Suppose we want to build the "category of monoids"
+- Then a monoid over some object `A` is an object in our monoid category
+- But what are the morphisms?
+
+---
+
+## Homomorphisms
+
+.homomorphism[![](homomorphism-1.svg)]
+
+???
+- Suppose we have two monoids, one over `A` and another over `B`
+
+--
+
+.homomorphism[![](homomorphism-2.svg)]
+
+???
+- Then a morphism between the two is called a monoid homomorphism
+- We'll denote these with squiggly arrows
+- A homomorphism is not just any function between `A` and `B`
+- Since we are dealing with monoids, a homomorphism must "respect" the monoid structure
+- Specifically
+
+--
+
+.homomorphism[![](homomorphism-3.svg)]
+
+???
+- It should map the empty value of one monoid to the empty value of the other
+- So that this diagram commutes
+- It must also respect the combination function
+
+--
+
+.homomorphism[![](homomorphism-4.svg)]
+
+???
+- So that it doesn't matter whether we first combine two `A`s and then apply `h`
+- Or we first apply `h` to both `A`s and then combine them using the `B` combination function
+- So any function that makes this diagram commute will be a homomorphism
+- **And it so happens that homomorphisms compose**
+- **And every time you see composition, there's probably a category lurking around**
+
+---
+
+## The Monoid Category
+
+
+.monoidCategory[![](monoid-category-1.svg)]
+
+???
+- Behold the monoid category
+- Objects are monoids and morphisms are monoid homomorphisms
+- Can we learn anything new from this category?
+- Well, there's something interesting going on
+- This new category is obviously related to the category of types that we started with
+- It's the same category, but with some extra structure added to it
+- Since category theory is naturally equipped for analyzing relationships
+- This relationship is worth looking into
+- Specifically, this relationship is about forgetting
+- If we forget the monoid structure
+
+--
+
+.monoidCategory[![](monoid-category-2.svg)]
+
+???
+- We get back to our original category
+- Let's try to think about this relationship more deeply
+- Previously, we thought about reversing arrows
+- Can we reverse this relationship?
+- Well, forgetting is not really reversible though, since different monoids might be all mapped to the same underlying object
+- But what really makes the monoid category special are its morphisms
+- Since only a small part of the regular functions will be homomorphisms
+- How can we deal with those in our un-forgetting process?
+- Let's focus on some specific function
+
+---
+
+## Memories of Homomorphisms Past
+
+.commaCategory[![](comma-category-1.svg)]
+
+???
+- If we pick some random function `f` from an object `A`, into some monoid `D`
+- It's not likely to be a homomorphism
+- But maybe it can be decomposed into parts
+
+--
+
+.commaCategory[![](comma-category-2.svg)]
+
+???
+- So we pick some other monoid, `C`, and decompose our original function into two parts, `g` and `h`
+- Such that this triangle commutes
+- `f` is still a regular function, but `h` is a homomorphism
+- We can think of `h` as the homomorphic part of `f`
+- If we focus on this part, maybe we can somehow un-forget ourselves back into the monoid category
+- But, this decomposition may not be unique
+
+--
+
+.commaCategory[![](comma-category-3.svg)]
+
+???
+- There are many different ways to achieve the same goal
+- The path through `B` here is an example of an alternative way
+- But the suggestive way in which I've drawn this diagram implies that there's something lurking around here
+- These functions from `A`, they are like steps from `A` towards the monoid world
+- And we can move between these steps using monoid homomorphisms
+- So we have composition
+- **This should be our cue to start looking for a new category to define**
+- Indeed, we can form a category here, a rather weird one
+- Our objects are going to be functions from `A`, like a `f` and `g` here
+- And morphisms in our new category are going to be homomorphisms that decompose them
+- That is, that form commuting triangles between our objects, like we have here
+- **This new category should somehow embody the notion of un-forgetting monoids from `A`**
+- For some obscure reasons, this category is called a "comma category"
+- **So let's explore this new category, maybe we'll learn something about the process of un-forgetting from it**
+---
+
+## Exploration
+
+???
+- As I mentioned in the previous part, a good place to start exploring categories is by looking at the initial or terminal objects
+- So let's take a look at the initial object
+--
+
+.initalComma[![](initial-comma-1.svg)]
+
+???
+- Since objects in the comma category are functions from `A`, that's what our initial object is going to be
+- By the definition of the initial object
+- For every other object in the comma category
+--
+
+.initalComma[![](initial-comma-2.svg)]
+
+???
+- There will be a unique homomorphism between the initial object and the other object
+
+--
+
+.initalComma[![](initial-comma-3.svg)]
+
+???
+- So we just discovered a new universal construction
+- **The combination of a new category and the old concept of initiality gave us something completely new**
+- But what is this thing? Is it useful for anything?
+- This is part of the challenge of using category theory for exploration
+- **We must figure out on our own whether a newly discovered structure is actually useful for anything we care about**
+- As we'll try do next
+
+---
+
+## Guess Who?
+
+.unitComma[![](initial-comma-unit.svg)]
+
+???
+- For concreteness, let's pick `A` to be `Unit`
+- And the monoid we are stepping into to be the integers with addition as the monoid action
+- This should make it easier to discover what we have here
+- So what do we have?
+--
+
+```
+f () = 5
+
+{{content}}
+```
+
+???
+- Let's pick a specific `f`
+- For example, given a `Unit` argument, it's going to return `5`
+--
+inj ()
+
+{{content}}
+???
+- We'll call our initial morphism `inj`, short for "inject", as it injects into this mystery monoid here
+- And so we have the result of applying `inj` to `Unit`
+- Which we'll leave unspecified for the moment
+- Since this is a commuting triangle, we know that
+
+--
+f () == 5 == h (inj ())
+
+{{content}}
+
+???
+- Either applying `f` to `Unit`, or first applying `inj` and then `h` yields the same thing
+- Hence the equation here
+- We also know that `h` is a homomorphism, so it must preserve the empty monoid value
+
+--
+0 == h empty
+{{content}}
+
+???
+- Giving us another equation
+- We also know that the homomorphism must respect the monoid action
+--
+
+5 + 5 == (h (inj ())) + (h (inj ()))
+{{content}}
+
+???
+- So if we combine two values that we already know
+- We can pull `h` outside, and swap addition with the monoid action of the initial object
+
+--
+      == h ((inj ()) `op` (inj ()))
+{{content}}
+
+???
+- Since we don't yet know what this action does, I'll just call it `op`
+- We can repeat this process and derive new equations
+--
+
+5 + 5 + 5 ==
+  h ((inj ()) `op` (inj ()) `op` (inj ()))
+{{content}}
+
+???
+- As many times as we want
+--
+
+5 + 5 ... + 5 ==
+  h ((inj ()) `op` (inj ()) ... `op` (inj ()))
+
+???
+- Since all the values on the left are unique, so are the values on the right
+- We are effectively generating values in our mystery monoid
+
+---
+## Guess Who?
+
+```
+empty
+(inj ()) `op` (inj ())
+(inj ()) `op` (inj ()) `op` (inj ())
+...
+(inj ()) `op` (inj ()) ... `op` (inj ())
+```
+
+???
+- So all of these are unique values from the new monoid that we found so far
+- We have the empty value and `op` delimited chains of other values
+- The structure that we have here is a bit obscured by bad naming
+- If we rename to something more suggestive
+---
+## Guess Who?
+
+```
+[]
+[()] ++ [()]
+[()] ++ [()] ++ [()]
+...
+[()] ++ [()] ... ++ [()]
+```
+
+???
+- We see that what we have here is the structure of arbitrary length lists of `Unit`
+- The monoid action appends two lists
+- And the `inj` function wraps `Unit` into a list
+- In general
+---
+
+## The Free Monoid
+
+- The initial object over `A` is `[A]`
+- `inj` builds a singleton list
+- `h == foldMap f`
+- No junk and no noise
+
+???
+- What we just discovered is called the free monoid
+- For an arbitrary `A` the initial object is just a list of `A`s
+- `inj` builds a singleton list
+- And the unique homomorphism is created by the `foldMap` function, known from Haskell's standard library
+- The universality of the homomorphism ensures that
+- We have "no junk", there are no extra elements beyond what is necessary to become a monoid, otherwise the homomorphism will not be unique
+- And we have "no noise", as there are no equations between the elements beyond what the monoid structure requires us to have, otherwise the homomorphism won't always exist
+- **So what we have here is the minimal way to build a monoid out of any `A`**
+- **By exploring this new category, which was the embodiment of un-forgetting**
+- **We've managed to deduce the minimal way to un-forget**
+- Circling back to the quote at the beginning of this part
+- When you see composition, there may be a category lurking around
+- Learning about the structure of that category can lead to interesting new insights
+- Like the free monoid we just discovered
+- Hopefully, our exploration of the monoid and comma categories managed to illustrate this point
+
+---
+class: middle, transition
+
+> I don't want to make any sweeping generalizations, but all I'll say is...
+
+.footnote[Anyone, before making a sweeping generalization]
+
+???
+- So far, we've been looking at concepts within specific categories
+- We'll now see how we can generalize concepts and move them between categories
+- This will seriously boost our ability to explore the idea space
+---
+
+## Monoids Redux
+
+.monoidGeneralization[![](monoid-generalization-1.svg)]
+
+???
+- This is the monoid definition that we had before
+- If we take a deeper look at it, it's not quite "portable"
+- The usage of `Unit` here makes it hardcoded for a specific category, namely, the category of types
+- **Similarly to how programmers like portable code, mathematicians like portable definitions**
+- Definitions that we can reuse in various contexts
+- Let's fix this and generalize the monoid
+- Now, the unit here is not the only problem, and even not the main problem
+- The product here is problematic as well
+- It's a very specific construction and it really constrains what we can do with it
+- But if we think about it, in the definition of the monoid we didn't actually use anything specific to the product
+- All we want is some notion of "two-ness", but we don't really care whether we have two copies of `A`, we just want an object that is a function of two `A`s
+- The product is just a specific case of it
+- Let's replace it with something more general
+--
+
+.monoidGeneralization[![](monoid-generalization-2.svg)]
+
+???
+- This new symbol here is called the "tensor product"
+- It's basically any well-behaved function of two objects
+- But we don't specify what function exactly
+- So it could be the usual product, but it can be something else as well
+- Now we can take care of the `Unit` here
+- When I first introduced it in the definition of the monoid, I said it was our way to reference specific elements of `A`
+- But that's only part of the story
+- It has another role as well, it's the identity object of the product
+--
+
+.identityObject1[![](identity-object-1.svg)]
+
+???
+- Which means that the product of any `A` with `Unit` is equivalent to `A`
+- Which makes sense, since `Unit` doesn't contain any new information
+- We need the equivalent for the tensor product
+
+--
+
+.identityObject2[![](identity-object-2.svg)]
+
+???
+- We'll call it `I`, for the identity object
+- Each instance of the tensor product will have its own identity object
+- And we can now use it in our generalized monoid
+--
+
+.monoidGeneralization[![](monoid-generalization-3.svg)]
+
+???
+- So we no longer reference the category of types
+- This makes the definition of the monoid very generic, or portable, and will open some interesting doors for us
+- But first, let's introduce a new category
+
+---
+layout: true
+
+## The Category of Endofunctors
+---
+
+???
+- In order to demonstrate how portable our generalized monoid is, we'll need a radically new category
+- The category of endofunctors
+--
+
+- Objects: endofunctors
+  - `Functor f`
+  - `Functor g`
+
+???
+- Our objects are now what in category theory is called endofunctors
+- Or in programming, somewhat confusingly, any type constructor that forms the usual `Functor` from functional programming 
+- So the objects are not regular types, but type-constructors
+--
+
+- Morphisms: natural transformations
+  - `forall a. f a -> g a`
+
+???
+- Mappings between functors are called natural transformations
+- I won't delve into them generally, but in programming they just correspond to parametric functions
+- Ones that uniformly take us from a type constructor `f` to a type constructor `g`
+- For example
+
+--
+
+  - `maybeToList :: forall a. Maybe a -> [a]`
+  - `reverse :: forall a. [a] -> [a]`
+
+???
+- This maps from the type-constructor `Maybe` to the type-constructor `List`
+- Both of them having a `Functor` instance
+- For us to have a monoid, we'll need a tensor product
+
+---
+
+- Tensor product: functor composition
+  - `(f ⊗ g) a = f (g a)`
+
+???
+- For this purpose, we'll use functor composition
+- So a tensor product of two functors is the application of one functor to the other
+- We'll also need the identity of the tensor
+--
+
+- Identity object: the identity functor
+  - `type Id a = a`
+
+???
+- This happens to be the identity functor, one that takes types to themselves
+- Since composing the identity functor with any other doesn't change anything
+- With all of this data, we can now build a monoid in this new category
+
+---
+layout: false
+
+## (Endo) Functor Monoids
+
+.functorMonoids[![](functor-monoid-1.svg)]
+
+???
+- We start with our generalized monoid
+- Since our elements are now functors, let's replace the letters
+--
+
+.functorMonoids[![](functor-monoid-2.svg)]
+
+???
+- Next, the identity object is the identity functor
+--
+
+.functorMonoids[![](functor-monoid-3.svg)]
+
+???
+- Now, since it's a bit inconvenient to talk about functors generically
+- I'm going to quantify the whole diagram with the type to which we apply the functor to
+--
+
+.functorMonoids[![](functor-monoid-4.svg)]
+
+???
+- So I'm saying that the diagram applies "for all `A`"
+- This means that I can reference `A` in the diagram, but it can be any `A` whatsoever
+- So the identity functor applied to `A` is just `A`
+--
+
+.functorMonoids[![](functor-monoid-5.svg)]
+
+???
+- We can apply `F` to `A` as well
+--
+
+.functorMonoids[![](functor-monoid-6.svg)]
+
+???
+- And now we change the tensor product to functor composition
+--
+
+.functorMonoids[![](functor-monoid-7.svg)]
+
+???
+- So what do we have here?
+
+---
+layout: true
+
+## (Endo) Functor Monoids
+
+.functorMonoidsSmall[![](functor-monoid-8.svg)]
+
+---
+???
+- Let's repeat this process with code
+---
+
+```
+class Monoid a where
+  combine :: a ⊗ a -> a
+
+  empty :: I -> a
+```
+
+???
+- This is the generalized monoid in code
+- Let's apply it to the endofunctor category
+---
+
+```
+class Functor f => Monoid f where
+  combine :: a ⊗ a -> a
+
+  empty :: I -> a
+```
+
+???
+- Instead of a concrete type `a`, we now have a type constructor `f` and a `Functor` constraint
+- Now we replace the functions with natural transformations with the appropriate types
+
+---
+
+```
+class Functor f => Monoid f where
+  combine :: forall a. (f ⊗ f) a -> f a
+
+  empty :: forall a. a -> f a
+```
+???
+- Replace the tensor product with functor composition
+---
+
+```
+class Functor f => Monoid f where
+  combine :: forall a. f (f a) -> f a
+
+  empty :: forall a. a -> f a
+```
+
+???
+- As an aside, can you think of other interesting tensor products in this category? What will they yield here?
+- This is starting to look familiar
+- A quick rename
+
+---
+
+```
+class Functor f => Monad f where
+  join :: f (f a) -> f a
+
+  return :: a -> f a
+```
+
+???
+- What we just rediscovered, rather mechanically, is the definition of the monad structure
+- We can even define the more standard `bind` operator in terms of the functions that we have here
+---
+
+```
+class Functor f => Monad f where
+  join :: f (f a) -> f a
+
+  return :: a -> f a
+
+  (>>=) :: f a -> (a -> f b) -> f b
+  (>>=) f k = join (fmap k f)
+```
+
+???
+- And this what gave birth to the now famous, or maybe infamous quote
+
+--
+.monadQuote[
+> A monad is just a monoid in the category of endofunctors, what's the problem?
+]
+
+???
+- A monad is just a monoid in the category of endofunctors
+- **So generalizing and moving between categories is a very powerful technique**
+- **Look how far apart are the two concepts we just connected**
+- **Can you imagine discovering the connection between monoids and monads without the wide perspective that category theory gives us?**
+
+---
+layout: false
+
+## Moving Between Categories
+
+- Knowledge reuse on overdrive
+
+???
+- And what's great about this portability, is that all of our derived knowledge about monoids can be adapted to this new category
+--
+
+- Free Monoids `->` Free Monads
+- Comonoids `->` Comonads
+
+???
+- The concept of the free monoid yields the very useful notion of the free monad
+- The dual concept also applies, so we just rediscovered comonads
+--
+
+- Laws and Proofs
+- Code (?)
+
+???
+- Although I didn't talk about them, these abstractions are also equipped with various laws, these can be ported as well
+- And maybe, in a sufficiently advanced language, we can actually reuse the same code for these different abstractions
+- **Imagine achieving this level of reuse with just regular code and without category theory to show you the way**
+- Now we are ready for our last part
+---
+
+
+class: middle, transition
+
+> Category theory is the study of compositionality: building big things out of little things, preserving guarantees.
+<br /> It would be utterly **astonishing** if this were not deeply useful for programming.
+
+.footnote[Ken Scambler, on [Twitter](https://twitter.com/KenScambler/status/1117622023163826176)]
+
+???
+- I'll try to get a bit closer to code and show how techniques that we've learned so far can be applied in programming
+
+---
+
+## "Case Study"
+
+???
+- It's not an actual case study, because there isn't any real case
+- But nonetheless
+--
+
+```
+mySpecialListFunction :: Monoid m =>
+  [a] -> m
+
+{{content}}
+```
+
+???
+- Imagine that you're writing some code
+- A function from a list to some monoid
+- You tediously spell out the recursion over the list and gather the results into your monoid
+- But then you recall that `List` is the free monoid
+- And from its intiality in the relevant category, you have `foldMap`
+--
+-- Initiality
+foldMap :: Monoid m =>
+  (a -> m) -> [a] -> m
+
+{{content}}
+
+???
+- `foldMap` saves us the effort of manually iterating over the list and accumulating the results
+- We just specify the action over single elements and the rest is handled for us
+- But why stop there, we just learned to generalize
+- Moving to the category of endofunctors we get
+--
+-- Generalization
+foldFree :: (Monad m, Functor f) =>
+  (forall x. f x -> m x) -> Free f a -> m a
+
+{{content}}
+
+???
+- `foldFree`
+- This is a useful function that actually appears in libraries, and it's the basic building block for working with free monads
+- We now also know about duality, so let's apply that as well
+--
+-- Duality
+unfoldCofree :: (Comonad w, Functor f) =>
+  (forall x. w x -> f x) -> w a -> Cofree f a
+
+???
+
+- So we just discovered a new structure: cofree comonads
+- And again, this function is very useful when working with them
+- **Look at these three type-signatures, and what an amazing journey in the idea space they imply**
+- **These are the sort of exploration tools that category theory gives us**
+- Speaking of which
+
+---
+## The Tools for Thought
+
+???
+- We can now take a step back and admire what we have
+
+--
+
+.categoricalExploration[![](categorical-exploration-1.svg)]
+
+???
+- So starting from the familiar concepts of products and monoids
+- We used three tools to explore the idea space
+
+--
+.categoricalExploration[![](categorical-exploration-2.svg)]
+
+???
+- Duality
+- Automatically discovering one concept from another
+
+--
+.categoricalExploration[![](categorical-exploration-3.svg)]
+???
+- Initiality
+- Bringing us free constructions
+
+--
+.categoricalExploration[![](categorical-exploration-4.svg)]
+
+???
+- And generalization
+- Allowing us to port definitions into completely new circumstances
+- And we can keep on applying these tools
+
+--
+.categoricalExploration[![](categorical-exploration-5.svg)]
+
+--
+.categoricalExploration[![](categorical-exploration-6.svg)]
+
+--
+.categoricalExploration[![](categorical-exploration-7.svg)]
+
+???
+- Going further and further and further around the idea space
+
+--
+.categoricalExploration[![](categorical-exploration-8.svg)]
+
+--
+.categoricalExploration[![](categorical-exploration-9.svg)]
+
+???
+- But this is just scratching the surfaces
+- Category theory can provide us with so many other tools
+
+--
+.categoricalExploration[![](categorical-exploration-10.svg)]
+
+???
+- The Yoneda lemma
+
+--
+.categoricalExploration[![](categorical-exploration-11.svg)]
+
+???
+- Adjunctions
+
+--
+.categoricalExploration[![](categorical-exploration-12.svg)]
+
+???
+- Kan extensions, that were mentioned in the beginning of this talk
+- And these are all reusable components, so we can just keep on mix and matching all of these
+
+--
+.categoricalExploration[![](categorical-exploration-13.svg)]
+
+--
+.categoricalExploration[![](categorical-exploration-14.svg)]
+
+--
+.categoricalExploration[![](categorical-exploration-15.svg)]
+
+???
+- Reaching ever expanding areas of the idea space
+
+--
+.categoricalExploration[![](categorical-exploration-16.svg)]
+
+--
+.categoricalExploration[![](categorical-exploration-17.svg)]
+
+???
+
+- And we are still just scratching the surface of what category theory can give us
+- **Imagine having all of these tools at your disposal**
+- **What sort of things will you be able to discover using category theory as your tool for thought?**
+- And since this is all I have for you today, I'll leave you with this rather cryptic quote to ponder about
+
+---
+class: middle, transition
+
+> All concepts are Kan extensions
+
+.footnote[Saunders Mac Lane]
+
+???
+
+- One day, I hope to make sense of this
+--
+
+.githubLink.centered[
+https://github.com/ncreep/category-theory-as-a-tool-for-thought
+]
+
+.questions.centered[Questions?]
+
+???
+- You can find the full presentation here
+- Thank you
+
+</textarea>
+<script
+	src="remark-0.14.0.min.js"
+	type="text/javascript">
+</script>
+<script type="text/javascript">
+  var slideshow = remark.create({
+	countIncrementalSlides: false,
+	highlightLanguage: 'haskell',
+	highlightStyle: 'magula' // default, googlecode, magula, vs
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="378" height="302" style="
+        width:378px;
+        height:302px;
+        background: white;
+        fill: none;
+">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" class="role-diagram-draw-area"><g class="shapes-region" style="stroke: black; fill: none;"><g class="intersections-group"><g style="stroke: rgb(0, 0, 0); stroke-width: 1; fill: none;"/></g></g><g><g class="connection-group"><g class="arrow-line"><path class="connection real" stroke-dasharray="6 6" d="  M148.11,130.63 L190,161.39" style="stroke: rgb(0, 0, 0); stroke-width: 1; fill: none;"/><g stroke="#000" transform="matrix(0.806031595764854,0.5918725087624556,-0.5918725087624556,0.806031595764854,146.5,129.4453125)" style="stroke: rgb(0, 0, 0); stroke-width: 1;"><path d=" M10.93,-3.29 Q4.96,-0.45 0,0 Q4.96,0.45 10.93,3.29"/></g></g></g></g><g/><!-- react-empty: 38808 --></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="376" height="300" style="width:376px;height:300px;font-family:Asana-Math, Asana;background:white;"><g><g><g style="transform:matrix(1,0,0,1,127.296875,128);"><path d="M889 271C889 509 692 705 453 705C214 705 18 509 18 271C18 32 214 -164 453 -164C692 -164 889 32 889 271Z" stroke="rgb(0, 0, 0)" stroke-width="8" fill="rgb(0, 0, 0)" style="transform:matrix(0.017,0,0,-0.017,0,0);"></path></g></g></g><g><g><g style="transform:matrix(1,0,0,1,193.78125,175);"><path d="M263 689C108 689 29 566 29 324C29 207 50 106 85 57C120 8 176 -20 238 -20C389 -20 465 110 465 366C465 585 400 689 263 689ZM245 654C342 654 381 556 381 316C381 103 343 15 251 15C154 15 113 116 113 360C113 571 150 654 245 654Z" stroke="rgb(0, 0, 0)" stroke-width="8" fill="rgb(0, 0, 0)" style="transform:matrix(0.017,0,0,-0.017,0,0);"></path></g></g></g></svg>
+</svg>

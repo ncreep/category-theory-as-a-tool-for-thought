@@ -1,0 +1,10 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="220" height="193" style="
+        width:220px;
+        height:193px;
+        background: white;
+        fill: none;
+">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" class="role-diagram-draw-area"><g class="shapes-region" style="stroke: black; fill: none;"><g class="intersections-group"><g style="stroke: rgb(0, 0, 0); stroke-width: 1; fill: none;"/></g></g><g/><g/><!-- react-empty: 37693 --></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="218" height="191" style="width:218px;height:191px;font-family:Asana-Math, Asana;background:white;"><g><g><g style="transform:matrix(1,0,0,1,113.296875,107);"><path d="M889 271C889 509 692 705 453 705C214 705 18 509 18 271C18 32 214 -164 453 -164C692 -164 889 32 889 271Z" stroke="rgb(0, 0, 0)" stroke-width="8" fill="rgb(0, 0, 0)" style="transform:matrix(0.017,0,0,-0.017,0,0);"></path></g></g></g></svg>
+</svg>

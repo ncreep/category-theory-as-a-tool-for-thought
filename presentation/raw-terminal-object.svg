@@ -1,0 +1,10 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="244" height="239.6666717529297" style="
+        width:244px;
+        height:239.6666717529297px;
+        background: white;
+        fill: none;
+">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" class="role-diagram-draw-area"><g class="shapes-region" style="stroke: black; fill: none;"><g class="intersections-group"><g style="stroke: rgb(0, 0, 0); stroke-width: 1; fill: none;"/></g></g><g><g class="connection-group"><g class="arrow-line"><path class="connection real" stroke-dasharray="6 6" d="  M83.5,89.54 L155.89,143.27" style="stroke: rgb(0, 0, 0); stroke-width: 1; fill: none;"/><g stroke="#000" transform="matrix(-0.8029215238344815,-0.5960847478029565,0.5960847478029565,-0.8029215238344815,157.5,144.46391752577318)" style="stroke: rgb(0, 0, 0); stroke-width: 1;"><path d=" M10.93,-3.29 Q4.96,-0.45 0,0 Q4.96,0.45 10.93,3.29"/></g></g></g></g><g/><!-- react-empty: 52809 --></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="242" height="237.6666717529297" style="width:242px;height:237.6666717529297px;font-family:Asana-Math, Asana;background:white;"><g><g><g style="transform:matrix(1,0,0,1,64.296875,87.66667175292969);"><path d="M889 271C889 509 692 705 453 705C214 705 18 509 18 271C18 32 214 -164 453 -164C692 -164 889 32 889 271Z" stroke="rgb(0, 0, 0)" stroke-width="8" fill="rgb(0, 0, 0)" style="transform:matrix(0.017,0,0,-0.017,0,0);"></path></g></g></g><g><g><g style="transform:matrix(1,0,0,1,161.296875,159.6666717529297);"><path d="M889 271C889 509 692 705 453 705C214 705 18 509 18 271C18 32 214 -164 453 -164C692 -164 889 32 889 271Z" stroke="rgb(0, 0, 0)" stroke-width="8" fill="rgb(0, 0, 0)" style="transform:matrix(0.017,0,0,-0.017,0,0);"></path></g></g></g></svg>
+</svg>
