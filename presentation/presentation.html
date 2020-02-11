@@ -416,7 +416,7 @@ layout: true
 - So each object in our indexing category is assigned to some object in our target category, singling out the desired pattern
 - In this case, a pair of objects
 - Formally speaking, we are building a functor from one category to the other, but I won't be going into that
-- We call this construction a diagram of the indexing category
+- We call this construction a **diagram** of the indexing category
 - This covers the pattern of objects in a universal construction
 - So let's zoom in on this pattern
 
@@ -431,7 +431,7 @@ layout: true
 .diagrams[![](diagrams-5.svg)]
 
 ???
-- We call this a "cone over the diagram", since, well, it looks like a cone
+- We call this a "**cone over the diagram**", since, well, it looks like a cone
 - And there need to be some other candidate cones for that same role
 
 --
@@ -444,7 +444,7 @@ layout: true
 .diagrams[![](diagrams-7.svg)]
 
 ???
-- We call this cone the "limit of the diagram"
+- We call this cone the "**limit of the diagram**"
 - Now, the limit captures all the parts of the universal construction pattern
 - We have the shape and the best object over the shape
 - In this case this limit describes the product contruction
@@ -602,7 +602,7 @@ class Monoid a where
 - So a monoid over some type `a` lets us combine two values of `a` into one
 - And also provides us with an empty value that just disappears during combination
 - You might notice, that this is not the standard way of describing monoids
-- But this way is more convenient for our purposes, since it will be easier to turn into a objects and morphisms
+- But this way is more convenient for our purposes, since it will be easier to turn into objects and morphisms
 - As we'll do now
 --
 
@@ -746,11 +746,11 @@ class Monoid a where
 - So we have composition
 - **This should be our cue to start looking for a new category to define**
 - Indeed, we can form a category here, a rather weird one
-- Our objects are going to be functions from `A`, like a `f` and `g` here
+- Our objects are going to be functions from `A` into monoids, like a `f` and `g` here
 - And morphisms in our new category are going to be homomorphisms that decompose them
 - That is, that form commuting triangles between our objects, like we have here
 - **This new category should somehow embody the notion of un-forgetting monoids from `A`**
-- For some obscure reasons, this category is called a "comma category"
+- For some obscure reasons, this category is called a "**comma category**"
 - **So let's explore this new category, maybe we'll learn something about the process of un-forgetting from it**
 ---
 
@@ -1003,7 +1003,7 @@ layout: true
 ---
 
 ???
-- In order to demonstrate how portable our generalized monoid is, we'll need a radically new category
+- In order to demonstrate how portable our generalized monoid is, we'll need a **radically new category**
 - The category of endofunctors
 --
 
@@ -1174,7 +1174,7 @@ class Functor f => Monad f where
 ```
 
 ???
-- What we just rediscovered, rather mechanically, is the definition of the monad structure
+- What we just rediscovered, **rather mechanically**, is the definition of the monad structure
 - We can even define the more standard `bind` operator in terms of the functions that we have here
 ---
 
