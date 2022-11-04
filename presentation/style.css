@@ -296,6 +296,11 @@ blockquote cite:before {
   width: 70%;
 }
 
+.caseStudy .remark-code {
+	font-weight: 900;
+	font-size: 29.1px;
+}
+
 .ideaSpace img {
   width: 850px;
   position: absolute;

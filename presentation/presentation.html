@@ -190,7 +190,7 @@ layout: false
 --
 
 - Objects: types
-  - `Integer`
+  - `Int`
   - `String`
   - `Boolean`
 
@@ -200,8 +200,8 @@ layout: false
 --
 
 - Morphisms: functions
-  - `show :: Integer -> String`
-  - `lessThan5 :: Integer -> Boolean`
+  - `show: Int => String`
+  - `lessThan5: Int => Boolean`
 
 ???
 - Morphisms are functions
@@ -562,12 +562,12 @@ layout: true
 --
 .terminalAndInitialCode[
 - Terminal: `()`
-- Initial: `Void`
+- Initial: `Nothing`
 ]
 
 ???
 - The terminal object is `Unit`, a type with a single inhabitant
-- The initial object is `Void`, a type with no inhabitants
+- The initial object is `Nothing`, a type with no inhabitants
 - The initial and terminal objects can in some sense be thought of as the endpoints of the category
 - And so, they are good starting points for exploring new categories
 - As we'll do next
@@ -591,9 +591,9 @@ class: middle, transition
 ## Monoids
 
 ```
-class Monoid a where
-  combine :: (a, a) -> a
-  empty :: () -> a
+trait Monoid[A]:
+  def combine: (A, A) => A
+  def empty: Unit => A
 ```
 
 ???
@@ -800,7 +800,7 @@ class Monoid a where
 --
 
 ```
-f () = 5
+f(()) = 5
 
 {{content}}
 ```
@@ -809,7 +809,7 @@ f () = 5
 - Let's pick a specific `f`
 - For example, given a `Unit` argument, it's going to return `5`
 --
-inj ()
+inj(())
 
 {{content}}
 ???
@@ -819,7 +819,7 @@ inj ()
 - Since this is a commuting triangle, we know that
 
 --
-f () == 5 == h (inj ())
+f(()) == 5 == h(inj(()))
 
 {{content}}
 
@@ -829,7 +829,7 @@ f () == 5 == h (inj ())
 - We also know that `h` is a homomorphism, so it must preserve the empty monoid value
 
 --
-0 == h empty
+0 == h(empty)
 {{content}}
 
 ???
@@ -837,7 +837,7 @@ f () == 5 == h (inj ())
 - We also know that the homomorphism must respect the monoid action
 --
 
-5 + 5 == (h (inj ())) + (h (inj ()))
+5 + 5 == h(inj(())) + h(inj(()))
 {{content}}
 
 ???
@@ -845,7 +845,7 @@ f () == 5 == h (inj ())
 - We can pull `h` outside, and swap addition with the monoid action of the initial object
 
 --
-      == h ((inj ()) `op` (inj ()))
+      == h(inj(()) op inj(()))
 {{content}}
 
 ???
@@ -854,7 +854,7 @@ f () == 5 == h (inj ())
 --
 
 5 + 5 + 5 ==
-  h ((inj ()) `op` (inj ()) `op` (inj ()))
+  h(inj(()) op inj(()) op inj(()))
 {{content}}
 
 ???
@@ -862,7 +862,7 @@ f () == 5 == h (inj ())
 --
 
 5 + 5 ... + 5 ==
-  h ((inj ()) `op` (inj ()) ... `op` (inj ()))
+  h(inj(()) op inj(()) ... op inj(()))
 
 ???
 - Since all the values on the left are unique, so are the values on the right
@@ -873,10 +873,10 @@ f () == 5 == h (inj ())
 
 ```
 empty
-(inj ()) `op` (inj ())
-(inj ()) `op` (inj ()) `op` (inj ())
+inj(()) op inj(())
+inj(()) op inj(()) op inj(())
 ...
-(inj ()) `op` (inj ()) ... `op` (inj ())
+inj(()) op inj(()) ... op inj(())
 ```
 
 ???
@@ -888,11 +888,11 @@ empty
 ## Guess Who?
 
 ```
-[]
-[()] ++ [()]
-[()] ++ [()] ++ [()]
+Nil
+List(()) ++ List(())
+List(()) ++ List(()) ++ List(())
 ...
-[()] ++ [()] ... ++ [()]
+List(()) ++ List(()) ... ++ List(())
 ```
 
 ???
@@ -904,9 +904,9 @@ empty
 
 ## The Free Monoid
 
-- The initial object over `A` is `[A]`
+- The initial object over `A` is `List[A]`
 - `inj` builds a singleton list
-- `h == foldMap f`
+- `h == foldMap(f)`
 - No junk and no noise
 
 ???
@@ -1008,8 +1008,8 @@ layout: true
 --
 
 - Objects: endofunctors
-  - `Functor f`
-  - `Functor g`
+  - `Functor[F]`
+  - `Functor[G]`
 
 ???
 - Our objects are now what in category theory is called endofunctors
@@ -1018,7 +1018,7 @@ layout: true
 --
 
 - Morphisms: natural transformations
-  - `forall a. f a -> g a`
+  - `[A] => F[A] => G[A]`
 
 ???
 - Mappings between functors are called natural transformations
@@ -1028,18 +1028,18 @@ layout: true
 
 --
 
-  - `maybeToList :: forall a. Maybe a -> [a]`
-  - `reverse :: forall a. [a] -> [a]`
+  - `optionToList: [A] => Option[A] => List[A]`
+  - `reverse: [A] => List[A] => List[A]`
 
 ???
-- This maps from the type-constructor `Maybe` to the type-constructor `List`
+- This maps from the type-constructor `Option` to the type-constructor `List`
 - Both of them having a `Functor` instance
 - For us to have a monoid, we'll need a tensor product
 
 ---
 
 - Tensor product: functor composition
-  - `(f ⊗ g) a = f (g a)`
+  - `(F ⊗ G)[A] = F[G[A]]`
 
 ???
 - For this purpose, we'll use functor composition
@@ -1048,7 +1048,7 @@ layout: true
 --
 
 - Identity object: the identity functor
-  - `type Id a = a`
+  - `type Id[A] = A`
 
 ???
 - This happens to be the identity functor, one that takes types to themselves
@@ -1118,10 +1118,10 @@ layout: true
 ---
 
 ```
-class Monoid a where
-  combine :: a ⊗ a -> a
-
-  empty :: I -> a
+trait Monoid[A]:
+  def combine: A ⊗ A => A
+  
+  def empty: I => A
 ```
 
 ???
@@ -1130,10 +1130,10 @@ class Monoid a where
 ---
 
 ```
-class Functor f => Monoid f where
-  combine :: a ⊗ a -> a
-
-  empty :: I -> a
+trait Monoid[F[_]: Functor]:
+  def combine: A ⊗ A => A
+  
+  def empty: I => A
 ```
 
 ???
@@ -1143,20 +1143,21 @@ class Functor f => Monoid f where
 ---
 
 ```
-class Functor f => Monoid f where
-  combine :: forall a. (f ⊗ f) a -> f a
-
-  empty :: forall a. a -> f a
+trait Monoid[F[_]: Functor]:
+  def combine[A]: (F ⊗ F)[A] => F[A]
+  
+  def empty[A]: A => F[A]
 ```
+
 ???
 - Replace the tensor product with functor composition
 ---
 
 ```
-class Functor f => Monoid f where
-  combine :: forall a. f (f a) -> f a
-
-  empty :: forall a. a -> f a
+trait Monoid[F[_]: Functor]:
+  def combine[A]: F[F[A]] => F[A]
+  
+  def empty[A]: A => F[A]
 ```
 
 ???
@@ -1167,25 +1168,26 @@ class Functor f => Monoid f where
 ---
 
 ```
-class Functor f => Monad f where
-  join :: f (f a) -> f a
-
-  return :: a -> f a
+trait Monad[F[_]: Functor]:
+  def flatten[A]: F[F[A]] => F[A]
+  
+  def pure[A]: A => F[A]
 ```
 
 ???
 - What we just rediscovered, **rather mechanically**, is the definition of the monad structure
-- We can even define the more standard `bind` operator in terms of the functions that we have here
+- We can even define the more standard `flatMap` function in terms of the functions that we have here
 ---
 
 ```
-class Functor f => Monad f where
-  join :: f (f a) -> f a
-
-  return :: a -> f a
-
-  (>>=) :: f a -> (a -> f b) -> f b
-  (>>=) f k = join (fmap k f)
+trait Monad[F[_]: Functor]:
+  def flatten[A]: F[F[A]] => F[A]
+  
+  def pure[A]: A => F[A]
+  
+  def flatMap[A, B](fa: F[A], 
+                    f: A => F[B]): F[B] =
+    flatten(fa.map(f))
 ```
 
 ???
@@ -1243,6 +1245,7 @@ class: middle, transition
 - I'll try to get a bit closer to code and show how techniques that we've learned so far can be applied in programming
 
 ---
+class: caseStudy
 
 ## "Case Study"
 
@@ -1252,8 +1255,8 @@ class: middle, transition
 --
 
 ```
-mySpecialListFunction :: Monoid m =>
-  [a] -> m
+def mySpecialListFunction[A, M: Monoid]
+  (ls: List[A]): M
 
 {{content}}
 ```
@@ -1265,9 +1268,10 @@ mySpecialListFunction :: Monoid m =>
 - But then you recall that `List` is the free monoid
 - And from its intiality in the relevant category, you have `foldMap`
 --
--- Initiality
-foldMap :: Monoid m =>
-  (a -> m) -> [a] -> m
+// Initiality
+def foldMap[A, M: Monoid]
+  (f: A => M)
+  (ls: List[A]): M
 
 {{content}}
 
@@ -1277,9 +1281,10 @@ foldMap :: Monoid m =>
 - But why stop there, we just learned to generalize
 - Moving to the category of endofunctors we get
 --
--- Generalization
-foldFree :: (Monad m, Functor f) =>
-  (forall x. f x -> m x) -> Free f a -> m a
+// Generalization
+def foldFree[A, M[_]: Monad, F[_]: Functor]
+  (f: [X] => F[X] => M[X])
+  (fr: Free[F, A]): M[A]
 
 {{content}}
 
@@ -1288,9 +1293,10 @@ foldFree :: (Monad m, Functor f) =>
 - This is a useful function that actually appears in libraries, and it's the basic building block for working with free monads
 - We now also know about duality, so let's apply that as well
 --
--- Duality
-unfoldCofree :: (Comonad w, Functor f) =>
-  (forall x. w x -> f x) -> w a -> Cofree f a
+// Duality
+def unfoldCofree[A, W[_]: Comonad, F[_]: Functor]
+  (f: [X] => W[X] => F[X])
+  (wa: W[A]): Cofree[F, A]
 
 ???
 
@@ -1424,14 +1430,22 @@ https://github.com/ncreep/category-theory-as-a-tool-for-thought
 - Thank you
 
 </textarea>
-<script
-	src="remark-0.14.0.min.js"
-	type="text/javascript">
+<script	src="remark-0.14.0.min.js"></script>
+
+<!-- For Scala 3 highlighting support -->
+<link rel="stylesheet" href="highlight.11.5.1.magula.min.css">
+<script src="highlight.11.5.1.min.js"></script>
+<script src="highlight.11.5.1.scala.min.js"></script>
+
+<script>
+// overriding the built-in highlighter with the newer version
+remark.highlighter.engine = hljs;
 </script>
+
 <script type="text/javascript">
   var slideshow = remark.create({
 	countIncrementalSlides: false,
-	highlightLanguage: 'haskell',
+	highlightLanguage: 'scala',
 	highlightStyle: 'magula' // default, googlecode, magula, vs
 });
 </script>
